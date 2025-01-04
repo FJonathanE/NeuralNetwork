@@ -1,0 +1,6 @@
+
+
+
+
+INFOS  LAYERS LearningRate MiniBatchSize Epochs
+big-sigmoid {784,500,500,10} 0.3 32 100
