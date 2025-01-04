@@ -79,14 +79,14 @@ public class Main {
 
 
     private static NeuralNetwork train(TrainingDataManager dataManager) {
-        int[] numLayers = {784, 200, 200, 10};
-        NeuralNetwork network = new NeuralNetwork(numLayers, new ReLuActivation(), new SumOfSquaredErrorsCost(), "src/saved_networks/async-test");
+        int[] numLayers = {784, 1000, 1000, 500, 10};
+        NeuralNetwork network = new NeuralNetwork(numLayers, new ReLuActivation(), new SumOfSquaredErrorsCost(), "src/saved_networks/very-big-relu");
 
         BackPropagationTraining propagationTraining = new BackPropagationTraining();
         propagationTraining.setEarlyStopping(true);
-        propagationTraining.setEarlyStoppingPatience(3);
+        propagationTraining.setEarlyStoppingPatience(5);
 
-        propagationTraining.trainMiniBatchAsync(network, dataManager, 0.1, 32, 100);
+        propagationTraining.trainMiniBatchAsync(network, dataManager, 0.05, 32, 100);
 
 
 

@@ -57,11 +57,7 @@ public class NeuralNetwork implements Serializable {
 
     }
 
-    public void clearAllGradients() {
-        for (Layer layer : layers) {
-            layer.initializeGradients();
-        }
-    }
+
 
     public double dataPointsCost(DataPoint[] data) {
         double cost = 0;
