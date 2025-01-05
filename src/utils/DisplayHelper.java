@@ -25,7 +25,7 @@ public class DisplayHelper {
         for (int i = 0; i < dataPoints.length; i++) {
             double[] output = network.calculateOutputs(dataPoints[i].getInputActivation());
 
-            if (getSortedIndices(output)[0] != getSortedIndices(dataPoints[i].getExpectedOutputActivation())[0]) {
+            if (MathUtils.getSortedIndices(output)[0] != MathUtils.getSortedIndices(dataPoints[i].getExpectedOutputActivation())[0]) {
                 wrongs++;
 
                 System.out.println("============================");
@@ -46,16 +46,17 @@ public class DisplayHelper {
         for (int i = 0; i < dataPoints.length; i++) {
             double[] output = network.calculateOutputs(dataPoints[i].getInputActivation());
 
-            if (getSortedIndices(output)[0] != getSortedIndices(dataPoints[i].getExpectedOutputActivation())[0]) {
+            if (MathUtils.getSortedIndices(output)[0] != MathUtils.getSortedIndices(dataPoints[i].getExpectedOutputActivation())[0]) {
                 wrongs++;
             }
         }
 
         System.out.println("Number of wrong identifications: " + wrongs + "/" + dataPoints.length);
+        System.out.println("Correct percentage: " + MathUtils.roundDecimalPoints((100-((double) wrongs /dataPoints.length)*100), 3) + "%");
     }
 
     public void printTop3Outputs(double[] output) {
-        int[] sortedIndices = getSortedIndices(output);
+        int[] sortedIndices = MathUtils.getSortedIndices(output);
         for (int i = 0; i < 3; i++) {
             System.out.println(sortedIndices[i] + ": " + Math.round(output[sortedIndices[i]] * 100.0) / 100.0);
         }
@@ -77,24 +78,7 @@ public class DisplayHelper {
     }
 
 
-    private int[] getSortedIndices(double[] array) {
-        // Paare von Index und Wert erstellen
-        Integer[] indices = new Integer[array.length];
-        for (int i = 0; i < array.length; i++) {
-            indices[i] = i;
-        }
 
-        // Sortiere Indizes basierend auf den Werten im Array
-        Arrays.sort(indices, new Comparator<Integer>() {
-            @Override
-            public int compare(Integer i1, Integer i2) {
-                return Double.compare(array[i2], array[i1]); // Absteigend sortieren
-            }
-        });
-
-        // Indizes als int[] zurückgeben
-        return Arrays.stream(indices).mapToInt(Integer::intValue).toArray();
-    }
 
 
 }

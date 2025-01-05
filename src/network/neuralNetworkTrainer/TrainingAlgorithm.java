@@ -181,12 +181,7 @@ public abstract class TrainingAlgorithm {
                 System.out.println("Finished in " + (System.currentTimeMillis() - startMillis) + "ms ");
                 System.out.println("Training error rate of epoch: " + MathUtils.roundDecimalPoints(totalError / batchCount, 4));
 
-                try {
-                    System.out.println("Saving network of this epoch");
-                    network.save(epoch);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+
 
 
 
@@ -194,7 +189,24 @@ public abstract class TrainingAlgorithm {
                 if (dataManager.hasValidationData()) {
                     double crossValidationError = network.dataPointsCost(validationData);
                     System.out.println("Validation error of epoch: " + MathUtils.roundDecimalPoints(crossValidationError, 4));
-                    if (shouldStop(crossValidationError)) {
+
+                    if (crossValidationError < minValidationError) {
+                        minValidationError = crossValidationError;
+                        patienceCounter = 0;
+
+                        System.out.println("Lowest cross validation error until now: " + minValidationError);
+                        try {
+                            System.out.println("Saving network of this epoch due to lowest cross validation error rate");
+                            network.save(epoch);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else {
+                        patienceCounter++;
+                        System.out.println("Not beaten lowest cross validation error since " + patienceCounter + " epochs!");
+                    }
+
+                    if (patienceCounter >= earlyStoppingPatience) {
                         System.out.println("Stopping training in epoch " + (epoch + 1) + " due to lack of cross validation error rate improvement!");
                         break;
                     }
@@ -206,21 +218,6 @@ public abstract class TrainingAlgorithm {
             // Executor-Service herunterfahren
             executor.shutdown();
         }
-    }
-
-
-    private boolean shouldStop(double crossValidationError) {
-        if (crossValidationError < minValidationError) {
-            minValidationError = crossValidationError;
-            patienceCounter = 0;
-
-            System.out.println("Lowest cross validation error until now: " + minValidationError);
-        } else {
-            patienceCounter++;
-            System.out.println("Not beaten lowest cross validation error since " + patienceCounter + " epochs!");
-        }
-
-        return (patienceCounter >= earlyStoppingPatience);
     }
 
 

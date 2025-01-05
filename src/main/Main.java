@@ -11,6 +11,7 @@ import utils.DisplayHelper;
 import utils.MnistDataReader;
 
 import java.io.IOException;
+import java.util.Random;
 
 public class Main {
 
@@ -23,15 +24,26 @@ public class Main {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         DisplayHelper printer = new DisplayHelper();
-        TrainingDataManager dataManager = new TrainingDataManager(getDataPoints(trainingDataPath, trainingDataLabelPath), 0.05);
-        dataManager.addTrainingDataNoise(0.2);
 //
 
-            NeuralNetwork network = train(dataManager);
-            test(network);
+        TrainingDataManager dataManager = new TrainingDataManager(getDataPoints(trainingDataPath, trainingDataLabelPath), 0.05);
+        dataManager.rotateTrainingData(20);
+        dataManager.translateTrainingData(6);
+        dataManager.addTrainingDataNoise(0.2);
+
+//
+        NeuralNetwork network = train(dataManager);
+        test(network);
+
+//        DataPoint[] trainingData = dataManager.getTrainingData(false);
+//
+//        for (int i = 0; i < 20; i++) {
+//            printer.printDigit(trainingData[i]);
+//        }
 
 
-//            NeuralNetwork network1 = NeuralNetwork.load("src/saved_networks/network-relu-big-0.ser");
+
+//            NeuralNetwork network1 = NeuralNetwork.load("src/saved_networks/relu-better-generalisation-1/epoch-39.ser");
 //            test(network1);
 //            NeuralNetwork network2 = NeuralNetwork.load("src/saved_networks/network-14.ser");
 //            test(network2);
@@ -79,20 +91,22 @@ public class Main {
 
 
     private static NeuralNetwork train(TrainingDataManager dataManager) {
-        int[] numLayers = {784, 1000, 1000, 500, 10};
-        NeuralNetwork network = new NeuralNetwork(numLayers, new ReLuActivation(), new SumOfSquaredErrorsCost(), "src/saved_networks/very-big-relu");
+        int[] numLayers = {784, 400, 400, 300, 300, 10};
+        NeuralNetwork network = new NeuralNetwork(numLayers, new ReLuActivation(), new SumOfSquaredErrorsCost(), "src/saved_networks/relu-better-generalisation");
 
         BackPropagationTraining propagationTraining = new BackPropagationTraining();
         propagationTraining.setEarlyStopping(true);
         propagationTraining.setEarlyStoppingPatience(5);
 
-        propagationTraining.trainMiniBatchAsync(network, dataManager, 0.05, 32, 100);
+        propagationTraining.trainMiniBatchAsync(network, dataManager, 0.02, 200, 200);
 
 
 
 
 //        propagationTraining.train(dataManager.getTrainingData(false), 0.5, network);
 //        test(network);
+
+
 
         return network;
     }
@@ -107,4 +121,5 @@ public class Main {
 //
 //        return network;
 //    }
+
 }

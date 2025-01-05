@@ -35,3 +35,8 @@ src/saved_networks
 src/data
 
 /NeuralNetwork.jar
+/src/META-INF/MANIFEST.MF
+/digit.png
+/blurred_digit.png
+/blurred_resized_digit.png
+/resized_digit.png
