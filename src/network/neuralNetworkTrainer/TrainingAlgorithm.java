@@ -124,8 +124,8 @@ public abstract class TrainingAlgorithm {
 
     public void trainMiniBatchAsync(NeuralNetwork network, TrainingDataManager dataManager, double learningRate, int minibatchSize, int epochs) {
 
-        DataPoint[] trainingData = dataManager.getTrainingData(true);
-        DataPoint[] validationData = dataManager.getValidationData(false);
+        DataPoint[] trainingData = dataManager.getTrainingData();
+        DataPoint[] validationData = dataManager.getValidationData();
 
         if (!dataManager.hasValidationData() && earlyStopping)
             System.out.println("Can't use early stopping if there is no validation data set!");
@@ -145,7 +145,8 @@ public abstract class TrainingAlgorithm {
 
                 System.out.println("===== EPOCH " + epoch + " STARTING =====");
 
-                trainingData = dataManager.getTrainingData(true);
+                dataManager.resetTrainingsData();
+                trainingData = dataManager.getTrainingData();
 
                 long startMillis = System.currentTimeMillis();
                 int batchCount = trainingData.length / minibatchSize;

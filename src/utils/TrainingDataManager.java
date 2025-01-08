@@ -6,23 +6,32 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class TrainingDataManager {
 
     private DataPoint[] totalData;
 
+    private DataPoint[] unmodifiedTrainingData;
     private DataPoint[] trainingData;
     private DataPoint[] validationData;
 
     private double validationDataPercentage;
     private DataPoint[] testData;
 
+    private boolean shuffleTrainingsData = false;
+    private double maxRandomTrainingDataRotationAnlge = 0;
+    private int maxRandomTrainingDataTranslation = 0;
+    private double trainingDataNoiseFactor = 0;
+
     /**
      * @param totalData                DataPoints to be used for training and perhaps part of it for cross validation.
      * @param validationDataPercentage Percentage of data to be used not for training but for cross validation. Set as 0 for no cross validation. Must be lower than 1.
      */
     public TrainingDataManager(DataPoint[] totalData, double validationDataPercentage) {
-//        totalData = shuffleData(totalData);
+        totalData = shuffleData(totalData);
         this.totalData = totalData;
         this.validationDataPercentage = validationDataPercentage;
 
@@ -35,68 +44,148 @@ public class TrainingDataManager {
 
 
             int index = (int) ((1 - validationDataPercentage) * totalData.length);
-            trainingData = Arrays.copyOfRange(totalData, 0, index);
+            unmodifiedTrainingData = Arrays.copyOfRange(totalData, 0, index);
             validationData = Arrays.copyOfRange(totalData, index, totalData.length);
         } else {
-            trainingData = totalData;
+            unmodifiedTrainingData = totalData;
             validationData = new DataPoint[0];
         }
 
 
+        resetTrainingsData();
     }
 
+    public void resetTrainingsData() {
+
+        DataPoint[] dataPoints = shuffleData(unmodifiedTrainingData, shuffleTrainingsData);
+        if (maxRandomTrainingDataRotationAnlge != 0) rotateDataPoints(dataPoints, maxRandomTrainingDataRotationAnlge);
+        if (maxRandomTrainingDataTranslation != 0) translateDataPoints(dataPoints, maxRandomTrainingDataTranslation);
+        if (trainingDataNoiseFactor != 0) addRandomNoise(dataPoints, trainingDataNoiseFactor);
+
+        trainingData = dataPoints;
+    }
+
+    public void setTrainingDataNoiseFactor(double trainingDataNoiseFactor) {
+        this.trainingDataNoiseFactor = trainingDataNoiseFactor;
+    }
+
+    public void setMaxRandomTrainingDataTranslation(int maxRandomTrainingDataTranslation) {
+        this.maxRandomTrainingDataTranslation = maxRandomTrainingDataTranslation;
+    }
+
+    public void setMaxRandomTrainingDataRotationAnlge(double maxRandomTrainingDataRotationAnlge) {
+        this.maxRandomTrainingDataRotationAnlge = maxRandomTrainingDataRotationAnlge;
+    }
+
+    public void setShuffleTrainingsData(boolean shuffleTrainingsData) {
+        this.shuffleTrainingsData = shuffleTrainingsData;
+    }
 
     /**
      *
      * @param noiseFactor Lower than 0.1 for small noise and bigger than 0.1 for big noise
      */
-    public void addTrainingDataNoise(double noiseFactor){
+    private void addRandomNoise(DataPoint[] dataPoints, double noiseFactor){
 
         System.out.println("Adding noise to training data with a noise factor of: " + noiseFactor);
 
-        Random random = new Random();
+        int numThreads = Runtime.getRuntime().availableProcessors();
+        try (ExecutorService executor = Executors.newFixedThreadPool(numThreads)) {
 
-        for (DataPoint dataPoint : trainingData) {
-            double[] inputActivation = dataPoint.getInputActivation();
+            int chunkSize = (int) Math.ceil((double) dataPoints.length / numThreads);
+            for (int thread = 0; thread < numThreads; thread++) {
 
-            for (int i = 0; i < inputActivation.length; i++) {
-                double noise = random.nextGaussian() * noiseFactor;
-                inputActivation[i] = Math.min(1, Math.max(0, inputActivation[i] + noise));
+                int start = thread * chunkSize;
+                int end = Math.min(start + chunkSize, dataPoints.length);
+
+                executor.submit(() -> {
+                    Random random = new Random();
+
+                    for (int i = start; i < end; i++){
+                        DataPoint dataPoint = dataPoints[i];
+
+                        double[] inputActivation = dataPoint.getInputActivation();
+
+                        for (int j = 0; j < inputActivation.length; j++) {
+                            double noise = random.nextGaussian() * noiseFactor;
+                            inputActivation[j] = Math.min(1, Math.max(0, inputActivation[j] + noise));
+                        }
+
+                        dataPoint.setInputActivation(inputActivation);
+                    }
+                });
+
             }
 
-            dataPoint.setInputActivation(inputActivation);
+            executor.shutdown();
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
 
 
     }
+
+
+
 
     public void setTestData(DataPoint[] testData) {
         this.testData = testData;
     }
 
     public DataPoint[] shuffleData(DataPoint[] dataPoints) {
+        System.out.println("Shuffling data");
+
         List<DataPoint> list = Arrays.asList(dataPoints);
         Collections.shuffle(list);
 
         return list.toArray(new DataPoint[0]);
     }
 
-    private DataPoint[] shuffleData(DataPoint[] dataPoints, boolean shuffle) {
+
+    public DataPoint[] getTrainingData() {
+        return trainingData.clone();
+    }
+
+    public DataPoint[] getTotalData() {
+        return totalData;
+    }
+
+    public DataPoint[] getUnmodifiedTrainingData() {
+        return unmodifiedTrainingData;
+    }
+
+    public double getValidationDataPercentage() {
+        return validationDataPercentage;
+    }
+
+    public boolean isShuffleTrainingsData() {
+        return shuffleTrainingsData;
+    }
+
+    public double getMaxRandomTrainingDataRotationAnlge() {
+        return maxRandomTrainingDataRotationAnlge;
+    }
+
+    public int getMaxRandomTrainingDataTranslation() {
+        return maxRandomTrainingDataTranslation;
+    }
+
+    public double getTrainingDataNoiseFactor() {
+        return trainingDataNoiseFactor;
+    }
+
+    private DataPoint[] shuffleData(DataPoint[] dataPoints, boolean shuffle){
         if (shuffle) return shuffleData(dataPoints);
-        else return dataPoints;
+        else return  dataPoints;
     }
 
-
-    public DataPoint[] getTrainingData(boolean shuffle) {
-        return shuffleData(trainingData, shuffle);
+    public DataPoint[] getValidationData() {
+        return validationData.clone();
     }
 
-    public DataPoint[] getValidationData(boolean shuffle) {
-        return shuffleData(validationData, shuffle);
-    }
-
-    public DataPoint[] getTestData(boolean shuffle) {
-        return shuffleData(testData, shuffle);
+    public DataPoint[] getTestData() {
+        return testData.clone();
     }
 
     public boolean hasValidationData() {
@@ -108,13 +197,13 @@ public class TrainingDataManager {
      *
      * @param maxRotationAngle The maximum angle (in degrees) for rotation. Rotations will be in the range [-maxRotationAngle, maxRotationAngle].
      */
-    public void rotateTrainingData(double maxRotationAngle) {
+    private void rotateDataPoints(DataPoint[] dataPoints, double maxRotationAngle) {
         System.out.println("Rotating training data with a maximum rotation angle of: " + maxRotationAngle + " degrees");
 
         Random random = new Random();
         double maxAngleRadians = Math.toRadians(maxRotationAngle);
 
-        for (DataPoint dataPoint : trainingData) {
+        for (DataPoint dataPoint : dataPoints) {
             double[] inputActivation = dataPoint.getInputActivation();
             int size = (int) Math.sqrt(inputActivation.length); // Assuming input data is square (e.g., 28x28).
 
@@ -177,14 +266,14 @@ public class TrainingDataManager {
      *
      * @param maxTranslation The maximum number of pixels to shift in any direction. Translations will be in the range [-maxTranslation, maxTranslation].
      */
-    public void translateTrainingData(int maxTranslation) {
+    private void translateDataPoints(DataPoint[] dataPoints, int maxTranslation) {
         System.out.println("Translating training data with a maximum translation of: " + maxTranslation + " pixels");
 
         Random random = new Random();
 
         int debug = 0;
 
-        for (DataPoint dataPoint : trainingData) {
+        for (DataPoint dataPoint : unmodifiedTrainingData) {
             double[] inputActivation = dataPoint.getInputActivation();
             int size = (int) Math.sqrt(inputActivation.length); // Assuming input data is square (e.g., 28x28).
 

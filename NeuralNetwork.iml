@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/src/data" />
       <excludeFolder url="file://$MODULE_DIR$/src/saved_networks" />
+      <excludeFolder url="file://$MODULE_DIR$/networks" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

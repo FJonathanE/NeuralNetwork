@@ -27,19 +27,16 @@ public class Main {
 //
 
         TrainingDataManager dataManager = new TrainingDataManager(getDataPoints(trainingDataPath, trainingDataLabelPath), 0.05);
-        dataManager.rotateTrainingData(20);
-        dataManager.translateTrainingData(6);
-        dataManager.addTrainingDataNoise(0.2);
+        dataManager.setShuffleTrainingsData(true);
+        dataManager.setMaxRandomTrainingDataRotationAnlge(20);
+        dataManager.setMaxRandomTrainingDataTranslation(2);
+        dataManager.setTrainingDataNoiseFactor(0.1);
+        dataManager.resetTrainingsData();
 
-//
+
         NeuralNetwork network = train(dataManager);
         test(network);
 
-//        DataPoint[] trainingData = dataManager.getTrainingData(false);
-//
-//        for (int i = 0; i < 20; i++) {
-//            printer.printDigit(trainingData[i]);
-//        }
 
 
 
@@ -91,8 +88,8 @@ public class Main {
 
 
     private static NeuralNetwork train(TrainingDataManager dataManager) {
-        int[] numLayers = {784, 400, 400, 300, 300, 10};
-        NeuralNetwork network = new NeuralNetwork(numLayers, new ReLuActivation(), new SumOfSquaredErrorsCost(), "src/saved_networks/relu-better-generalisation");
+        int[] numLayers = {784, 300, 200, 200, 10};
+        NeuralNetwork network = new NeuralNetwork(numLayers, new ReLuActivation(), new SumOfSquaredErrorsCost(), "networks/temporary/big-relu");
 
         BackPropagationTraining propagationTraining = new BackPropagationTraining();
         propagationTraining.setEarlyStopping(true);

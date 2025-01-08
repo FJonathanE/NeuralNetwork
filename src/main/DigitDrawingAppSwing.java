@@ -105,13 +105,11 @@ public class DigitDrawingAppSwing extends JFrame {
     private void classifyDrawing() {
         try {
             // Skaliere das Bild auf 28x28 und normalisiere es
-            ImageIO.write(canvasImage, "png", new File("digit.png"));
 //            BufferedImage blurredImage = applyGaussianBlur(canvasImage);
 //            ImageIO.write(canvasImage, "png", new File("blurred_digit.png"));
             BufferedImage resizedImage = resizeImage(canvasImage, 28, 28);
-            ImageIO.write(resizedImage, "png", new File("resized_digit.png"));
             BufferedImage blurredResizedImage = applyGaussianBlur(resizedImage);
-            ImageIO.write(blurredResizedImage, "png", new File("blurred_resized_digit.png"));
+//            ImageIO.write(blurredResizedImage, "png", new File("blurred_resized_digit.png"));
 
             double[] inputData = imageToArray(blurredResizedImage);
 
@@ -193,7 +191,7 @@ public class DigitDrawingAppSwing extends JFrame {
     private NeuralNetwork loadTrainedNetwork() {
         // Lade dein trainiertes neuronales Netzwerk
         try {
-            return NeuralNetwork.load("src/saved_networks/relu-better-generalisation-3/epoch-44.ser");
+            return NeuralNetwork.load("networks/temporary/big-relu-10/epoch-2.ser");
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
