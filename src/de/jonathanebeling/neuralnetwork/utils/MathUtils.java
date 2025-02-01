@@ -63,5 +63,40 @@ public class MathUtils {
         return flatArray;
     }
 
+
+    public static double[] multiplyElementwise(double[] array1, double[] array2){
+        if (array1.length != array2.length) throw new IllegalArgumentException("Arrays have to be of same length");
+
+        double[] output = new double[array1.length];
+
+        for (int index = 0; index < array1.length; index++) {
+            output[index] = array1[index] * array2[index];
+        }
+
+        return output;
+    }
+
+    public static double sum(double[] array){
+        double output = 0;
+
+        for (double d : array) {
+            output += d;
+        }
+
+        return output;
+    }
+
+    public static double sumMultipliedArrays(double[] array1, double[] array2){
+        if (array1.length != array2.length) throw new IllegalArgumentException("Arrays have to be of same length");
+
+        double output = 0;
+
+        for (int index = 0; index < array1.length; index++) {
+            output += array1[index] * array2[index];
+        }
+
+        return output;
+    }
+
     
 }

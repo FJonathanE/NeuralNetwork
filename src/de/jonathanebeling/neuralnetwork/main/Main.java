@@ -28,14 +28,16 @@ public class Main {
 
 
         dataManager.setShuffleTrainingsData(true);
-        dataManager.setMaxRandomTrainingDataRotationAngle(10);
-        dataManager.setMaxRandomTrainingDataTranslation(2);
+//        dataManager.setMaxRandomTrainingDataRotationAngle(10);
+//        dataManager.setMaxRandomTrainingDataTranslation(2);
         dataManager.setTrainingDataNoiseFactor(0.1);
         dataManager.resetTrainingsData();
 
 
         NeuralNetwork network = train(dataManager);
-        test(network);
+
+
+        network.test(dataManager.getTestData());
 
 
     }
@@ -53,33 +55,14 @@ public class Main {
     }
 
 
-    private static void test(NeuralNetwork network) {
-        DataPoint[] testData = getDataPoints(testDataPath, testDataLabelPath);
-
-
-        double error = network.dataPointsCost(testData);
-
-        DisplayHelper printer = new DisplayHelper();
-
-        System.out.println(" ");
-        System.out.println("Total error rate of test set: " + error);
-        printer.printNumberOfWrongs(network, testData);
-    }
 
 
     private static NeuralNetwork train(TrainingDataManager dataManager) {
-        int[] numLayers = {784, 400, 400, 10};
+        int[] numLayers = {784, 100, 100, 10};
         NeuralNetwork network = new NeuralNetwork(numLayers, new ReLuActivation(), new SumOfSquaredErrorsCost(), "networks/temporary/test");
 
         network.trainMiniBatchAsync(dataManager, 0.01, 50, 20);
         network.trainMiniBatchAsync(dataManager, 0.005, 50, 20);
-
-
-
-
-        test(network);
-
-
 
         return network;
     }

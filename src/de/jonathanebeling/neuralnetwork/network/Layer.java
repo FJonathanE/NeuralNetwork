@@ -2,6 +2,7 @@ package de.jonathanebeling.neuralnetwork.network;
 
 import de.jonathanebeling.neuralnetwork.activationFunctions.ActivationFunction;
 import de.jonathanebeling.neuralnetwork.costFunctions.CostFunction;
+import de.jonathanebeling.neuralnetwork.utils.MathUtils;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -27,14 +28,14 @@ public class Layer implements Serializable {
         this.activationFunction = activationFunction;
         this.costFunction = costFunction;
 
-        weightsIn = new double[nodesIn][nodesOut];
+        weightsIn = new double[nodesOut][nodesIn];
         biases = new double[nodesOut];
 
 
         //Random weights and biases on initialization
         for (int i = 0; i < nodesOut; i++) {
             for (int j = 0; j < nodesIn; j++) {
-                weightsIn[j][i] = random.nextGaussian() * Math.sqrt(2.0 / nodesIn);  // He-Initialisierung
+                weightsIn[i][j] = random.nextGaussian() * Math.sqrt(2.0 / nodesIn);  // He-Initialisierung
             }
         }
     }
@@ -46,7 +47,7 @@ public class Layer implements Serializable {
             biases[out] -= layerTrainingInstance.getCostGradientB()[out] * learningRate;
 
             for (int in = 0; in < nodesIn; in++) {
-                weightsIn[in][out] -= layerTrainingInstance.getCostGradientW()[in][out] * learningRate;
+                weightsIn[out][in] -= layerTrainingInstance.getCostGradientW()[out][in] * learningRate;
             }
         }
     }
@@ -61,11 +62,8 @@ public class Layer implements Serializable {
         }
 
         for (int out = 0; out < nodesOut; out++) {
-            double weightedInput = 0;
 
-            for (int in = 0; in < inputs.length; in++) {
-                weightedInput += inputs[in] * weightsIn[in][out];
-            }
+            double weightedInput = MathUtils.sumMultipliedArrays(inputs, weightsIn[out]);
 
 
             weightedInput += biases[out];
@@ -93,18 +91,6 @@ public class Layer implements Serializable {
 
     public double[] getBiases() {
         return biases;
-    }
-
-    public void setWeight(int in, int out, double newWeight) {
-        weightsIn[in][out] = newWeight;
-    }
-
-    public void nudgeWeight(int in, int out, double deltaWeight) {
-        weightsIn[in][out] += deltaWeight;
-    }
-
-    public void nudgeBias(int biasIndex, double deltaBias) {
-        biases[biasIndex] += deltaBias;
     }
 
     public ActivationFunction getActivationFunction() {

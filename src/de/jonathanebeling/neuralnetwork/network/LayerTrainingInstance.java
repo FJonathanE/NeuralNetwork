@@ -1,5 +1,7 @@
 package de.jonathanebeling.neuralnetwork.network;
 
+import de.jonathanebeling.neuralnetwork.utils.MathUtils;
+
 public class LayerTrainingInstance {
 
     private double[][] costGradientW;
@@ -16,7 +18,7 @@ public class LayerTrainingInstance {
     public LayerTrainingInstance(Layer layer) {
         this.layer = layer;
 
-        costGradientW = new double[layer.getNodesIn()][layer.getNodesOut()];
+        costGradientW = new double[layer.getNodesOut()][layer.getNodesIn()];
         costGradientB = new double[layer.getNodesOut()];
     }
 
@@ -30,14 +32,11 @@ public class LayerTrainingInstance {
         }
 
         for (int out = 0; out < layer.getNodesOut(); out++) {
-            double weightedInput = 0;
 
-            for (int in = 0; in < inputs.length; in++) {
-                weightedInput += inputs[in] * layer.getWeightsIn()[in][out];
-            }
-
-
+            double weightedInput = MathUtils.sumMultipliedArrays(inputs, layer.getWeightsIn()[out]);
             weightedInput += layer.getBiases()[out];
+
+
             weightedInputs[out] = weightedInput;
             activations[out] = layer.getActivationFunction().activation(weightedInput);
         }
@@ -55,8 +54,10 @@ public class LayerTrainingInstance {
             for (int nodeIn = 0; nodeIn < layer.getNodesIn(); nodeIn++) {
                 double derivativeCostWrtWeight = lastInputs[nodeIn] * nodeValues[nodeOut];
 
-                costGradientW[nodeIn][nodeOut] += derivativeCostWrtWeight;
+                costGradientW[nodeOut][nodeIn] += derivativeCostWrtWeight;
             }
+
+
 
             double derivativeCostWrtBias = 1 * nodeValues[nodeOut];
             costGradientB[nodeOut] += derivativeCostWrtBias;
@@ -85,9 +86,10 @@ public class LayerTrainingInstance {
         for (int newNodeIndex = 0; newNodeIndex < newNodeValues.length; newNodeIndex++) {
             double newNodeValue = 0;
             for (int oldNodeIndex = 0; oldNodeIndex < oldNodeValues.length; oldNodeIndex++) {
-                double weightedInputDerivative = oldLayer.getLayer().getWeightsIn()[newNodeIndex][oldNodeIndex];
+                double weightedInputDerivative = oldLayer.getLayer().getWeightsIn()[oldNodeIndex][newNodeIndex];
                 newNodeValue += weightedInputDerivative * oldNodeValues[oldNodeIndex];
             }
+
 
             newNodeValue *= layer.getActivationFunction().derivative(lastWeightedInputs[newNodeIndex]);
             newNodeValues[newNodeIndex] = newNodeValue;

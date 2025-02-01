@@ -4,6 +4,7 @@ import de.jonathanebeling.neuralnetwork.activationFunctions.ActivationFunction;
 import de.jonathanebeling.neuralnetwork.costFunctions.CostFunction;
 import de.jonathanebeling.neuralnetwork.data.DataPoint;
 import de.jonathanebeling.neuralnetwork.data.TrainingDataManager;
+import de.jonathanebeling.neuralnetwork.utils.DisplayHelper;
 import de.jonathanebeling.neuralnetwork.utils.MathUtils;
 
 import java.io.*;
@@ -12,6 +13,7 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.logging.Logger;
 
 public class NeuralNetwork implements Serializable {
     @Serial
@@ -214,6 +216,23 @@ public class NeuralNetwork implements Serializable {
             // Executor-Service herunterfahren
             executor.shutdown();
         }
+    }
+
+    public void test(DataPoint[] testData){
+
+        if (testData == null || testData.length == 0){
+            System.out.println("Can't test network on empty data set!");
+            return;
+        }
+
+        double error = dataPointsCost(testData);
+
+        DisplayHelper printer = new DisplayHelper();
+
+        System.out.println(" ");
+        System.out.println("Total error rate of test set: " + error);
+        printer.printNumberOfWrongs(this, testData);
+
     }
 
     private boolean validateEpochTraining(TrainingDataManager dataManager){
