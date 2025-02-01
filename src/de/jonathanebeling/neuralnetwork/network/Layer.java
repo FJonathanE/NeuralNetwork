@@ -1,7 +1,7 @@
-package network;
+package de.jonathanebeling.neuralnetwork.network;
 
-import network.activationFunctions.ActivationFunction;
-import network.costFunctions.CostFunction;
+import de.jonathanebeling.neuralnetwork.activationFunctions.ActivationFunction;
+import de.jonathanebeling.neuralnetwork.costFunctions.CostFunction;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -76,10 +76,6 @@ public class Layer implements Serializable {
 
         return activations;
     }
-
-
-
-
 
 
 

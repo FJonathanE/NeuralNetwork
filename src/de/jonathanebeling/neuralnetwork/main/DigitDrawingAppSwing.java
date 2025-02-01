@@ -1,20 +1,14 @@
-package main;
-import network.DataPoint;
-import network.NeuralNetwork;
-import utils.DisplayHelper;
+package de.jonathanebeling.neuralnetwork.main;
+import de.jonathanebeling.neuralnetwork.data.DataPoint;
+import de.jonathanebeling.neuralnetwork.network.NeuralNetwork;
+import de.jonathanebeling.neuralnetwork.utils.DisplayHelper;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.awt.image.ConvolveOp;
-import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import javax.imageio.ImageIO;
 
 public class DigitDrawingAppSwing extends JFrame {
 
@@ -191,7 +185,7 @@ public class DigitDrawingAppSwing extends JFrame {
     private NeuralNetwork loadTrainedNetwork() {
         // Lade dein trainiertes neuronales Netzwerk
         try {
-            return NeuralNetwork.load("networks/temporary/big-relu-10/epoch-2.ser");
+            return NeuralNetwork.load("networks/temporary/test-6/epoch-6.ser");
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {

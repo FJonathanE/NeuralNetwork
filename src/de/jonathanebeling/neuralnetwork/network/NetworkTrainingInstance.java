@@ -1,4 +1,6 @@
-package network;
+package de.jonathanebeling.neuralnetwork.network;
+
+import de.jonathanebeling.neuralnetwork.data.DataPoint;
 
 public class NetworkTrainingInstance {
 
@@ -24,19 +26,29 @@ public class NetworkTrainingInstance {
         return inputActivations;
     }
 
-    public NeuralNetwork getNetwork() {
-        return network;
-    }
 
-    public LayerTrainingInstance[] getLayerTrainingInstances() {
-        return layerTrainingInstances;
-    }
 
     public void applyAllGradients(double learningRate) {
 
         for (LayerTrainingInstance layer : layerTrainingInstances) {
             layer.getLayer().applyGradients(learningRate, layer);
         }
+    }
 
+    protected double trainOnDatapoint(DataPoint datapoint) {
+        double[] outputs = calculateOutputs(datapoint.getInputActivation());
+
+        LayerTrainingInstance outputLayer = layerTrainingInstances[layerTrainingInstances.length - 1];
+        outputLayer.updateOutputLayerNodeValues(datapoint.getExpectedOutputActivation());
+        outputLayer.updateGradients();
+
+
+        for (int hiddenLayerIndex = layerTrainingInstances.length - 2; hiddenLayerIndex >= 0; hiddenLayerIndex--) {
+            LayerTrainingInstance hiddenLayer = layerTrainingInstances[hiddenLayerIndex];
+            hiddenLayer.updateHiddenLayerNodeValues(layerTrainingInstances[hiddenLayerIndex + 1]);
+            hiddenLayer.updateGradients();
+        }
+
+        return network.getCostFunction().dataPointCost(datapoint, outputs);
     }
 }

@@ -1,6 +1,4 @@
-package utils;
-
-import network.DataPoint;
+package de.jonathanebeling.neuralnetwork.data;
 
 import java.io.*;
 

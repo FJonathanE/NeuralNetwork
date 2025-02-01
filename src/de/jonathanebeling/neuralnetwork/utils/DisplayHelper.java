@@ -1,9 +1,7 @@
-package utils;
+package de.jonathanebeling.neuralnetwork.utils;
 
-import network.DataPoint;
-import network.NeuralNetwork;
-
-import java.util.*;
+import de.jonathanebeling.neuralnetwork.data.DataPoint;
+import de.jonathanebeling.neuralnetwork.network.NeuralNetwork;
 
 public class DisplayHelper {
 

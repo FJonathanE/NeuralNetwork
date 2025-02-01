@@ -1,6 +1,4 @@
-package network.activationFunctions;
-
-import java.io.Serializable;
+package de.jonathanebeling.neuralnetwork.activationFunctions;
 
 public class SigmoidActivation implements ActivationFunction {
 

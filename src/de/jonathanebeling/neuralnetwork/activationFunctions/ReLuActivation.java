@@ -1,4 +1,4 @@
-package network.activationFunctions;
+package de.jonathanebeling.neuralnetwork.activationFunctions;
 
 public class ReLuActivation implements ActivationFunction{
     @Override

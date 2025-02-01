@@ -1,6 +1,4 @@
-package utils;
-
-import network.DataPoint;
+package de.jonathanebeling.neuralnetwork.data;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,19 +8,22 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static de.jonathanebeling.neuralnetwork.utils.MathUtils.from1dTo2d;
+import static de.jonathanebeling.neuralnetwork.utils.MathUtils.from2dTo1d;
+
 public class TrainingDataManager {
 
-    private DataPoint[] totalData;
+    private final DataPoint[] totalData;
 
-    private DataPoint[] unmodifiedTrainingData;
+    private final DataPoint[] unmodifiedTrainingData;
     private DataPoint[] trainingData;
     private DataPoint[] validationData;
 
-    private double validationDataPercentage;
+    private final double validationDataPercentage;
     private DataPoint[] testData;
 
     private boolean shuffleTrainingsData = false;
-    private double maxRandomTrainingDataRotationAnlge = 0;
+    private double maxRandomTrainingDataRotationAngle = 0;
     private int maxRandomTrainingDataTranslation = 0;
     private double trainingDataNoiseFactor = 0;
 
@@ -58,7 +59,7 @@ public class TrainingDataManager {
     public void resetTrainingsData() {
 
         DataPoint[] dataPoints = shuffleData(unmodifiedTrainingData, shuffleTrainingsData);
-        if (maxRandomTrainingDataRotationAnlge != 0) rotateDataPoints(dataPoints, maxRandomTrainingDataRotationAnlge);
+        if (maxRandomTrainingDataRotationAngle != 0) rotateDataPoints(dataPoints, maxRandomTrainingDataRotationAngle);
         if (maxRandomTrainingDataTranslation != 0) translateDataPoints(dataPoints, maxRandomTrainingDataTranslation);
         if (trainingDataNoiseFactor != 0) addRandomNoise(dataPoints, trainingDataNoiseFactor);
 
@@ -73,8 +74,8 @@ public class TrainingDataManager {
         this.maxRandomTrainingDataTranslation = maxRandomTrainingDataTranslation;
     }
 
-    public void setMaxRandomTrainingDataRotationAnlge(double maxRandomTrainingDataRotationAnlge) {
-        this.maxRandomTrainingDataRotationAnlge = maxRandomTrainingDataRotationAnlge;
+    public void setMaxRandomTrainingDataRotationAngle(double maxRandomTrainingDataRotationAnlge) {
+        this.maxRandomTrainingDataRotationAngle = maxRandomTrainingDataRotationAnlge;
     }
 
     public void setShuffleTrainingsData(boolean shuffleTrainingsData) {
@@ -164,7 +165,7 @@ public class TrainingDataManager {
     }
 
     public double getMaxRandomTrainingDataRotationAnlge() {
-        return maxRandomTrainingDataRotationAnlge;
+        return maxRandomTrainingDataRotationAngle;
     }
 
     public int getMaxRandomTrainingDataTranslation() {
@@ -212,14 +213,14 @@ public class TrainingDataManager {
             }
 
             // Convert the flat array to a 2D array for easier rotation.
-            double[][] image = flatTo2DArray(inputActivation, size, size);
+            double[][] image = from1dTo2d(inputActivation, size, size);
 
             // Generate a random angle in radians.
             double angle = (random.nextDouble() * 2 - 1) * maxAngleRadians;
 
             // Rotate the image and flatten it back.
             double[][] rotatedImage = rotateImage(image, angle);
-            double[] rotatedInputActivation = flatten2DArray(rotatedImage);
+            double[] rotatedInputActivation = from2dTo1d(rotatedImage);
 
             // Update the DataPoint with the rotated activations.
             dataPoint.setInputActivation(rotatedInputActivation);
@@ -282,7 +283,7 @@ public class TrainingDataManager {
             }
 
             // Convert the flat array to a 2D array for easier manipulation.
-            double[][] image = flatTo2DArray(inputActivation, size, size);
+            double[][] image = from1dTo2d(inputActivation, size, size);
 
             // Generate random translations for x and y.
             int translateX = random.nextInt(2 * maxTranslation) - maxTranslation;
@@ -297,7 +298,7 @@ public class TrainingDataManager {
             }catch (RuntimeException exception){
                 exception.printStackTrace();
             }
-            double[] translatedInputActivation = flatten2DArray(translatedImage);
+            double[] translatedInputActivation = from2dTo1d(translatedImage);
 
             // Update the DataPoint with the translated activations.
             dataPoint.setInputActivation(translatedInputActivation);
@@ -340,37 +341,4 @@ public class TrainingDataManager {
         return translatedImage;
     }
 
-    /**
-     * Converts a flat array to a 2D array.
-     *
-     * @param flatArray The flat array to convert.
-     * @param rows The number of rows in the 2D array.
-     * @param cols The number of columns in the 2D array.
-     * @return The 2D array.
-     */
-    public double[][] flatTo2DArray(double[] flatArray, int rows, int cols) {
-        double[][] array2D = new double[rows][cols];
-        for (int i = 0; i < flatArray.length; i++) {
-            array2D[i / cols][i % cols] = flatArray[i];
-        }
-        return array2D;
-    }
-
-    /**
-     * Flattens a 2D array to a flat array.
-     *
-     * @param array2D The 2D array to flatten.
-     * @return The flat array.
-     */
-    public double[] flatten2DArray(double[][] array2D) {
-        int rows = array2D.length;
-        int cols = array2D[0].length;
-        double[] flatArray = new double[rows * cols];
-        for (int y = 0; y < rows; y++) {
-            for (int x = 0; x < cols; x++) {
-                flatArray[y * cols + x] = array2D[y][x];
-            }
-        }
-        return flatArray;
-    }
 }

@@ -1,4 +1,4 @@
-package network;
+package de.jonathanebeling.neuralnetwork.data;
 
 import java.io.Serial;
 import java.io.Serializable;
