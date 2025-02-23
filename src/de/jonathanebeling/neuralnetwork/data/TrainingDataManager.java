@@ -1,5 +1,6 @@
 package de.jonathanebeling.neuralnetwork.data;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -143,6 +144,32 @@ public class TrainingDataManager {
         return list.toArray(new DataPoint[0]);
     }
 
+    private static DataPoint[] getMnistDataPoints(String dataPath, String labelPath) {
+        MnistDataReader reader = new MnistDataReader();
+        DataPoint[] data;
+        try {
+            data = reader.readData(dataPath, labelPath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return data;
+    }
+
+
+    public static TrainingDataManager fromMnistData(double validationDataPercentage, String trainingDataPath, String trainingDataLabelPath, String testDataPath, String testDataLabelPath){
+
+        DataPoint[] trainingData = getMnistDataPoints(trainingDataPath, trainingDataLabelPath);
+
+        TrainingDataManager dataManager = new TrainingDataManager(trainingData, validationDataPercentage);
+
+        if (testDataLabelPath != null && testDataPath != null){
+            DataPoint[] testData = getMnistDataPoints(testDataPath, testDataLabelPath);
+            dataManager.setTestData(testData);
+        }
+
+        return dataManager;
+    }
 
     public DataPoint[] getTrainingData() {
         return trainingData.clone();

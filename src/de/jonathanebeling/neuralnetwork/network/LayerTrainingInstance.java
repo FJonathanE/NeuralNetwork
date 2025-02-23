@@ -4,8 +4,8 @@ import de.jonathanebeling.neuralnetwork.utils.MathUtils;
 
 public class LayerTrainingInstance {
 
-    private double[][] costGradientW;
-    private double[] costGradientB;
+    private final double[][] costGradientW;
+    private final double[] costGradientB;
 
     private double[] lastActivations;
     private double[] lastWeightedInputs;

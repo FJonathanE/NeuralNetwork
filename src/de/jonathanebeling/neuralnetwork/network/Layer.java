@@ -55,19 +55,23 @@ public class Layer implements Serializable {
 
     public double[] calculateOutputActivations(double[] inputs) {
         double[] activations = new double[nodesOut];
-        double[] weightedInputs = new double[nodesOut];
 
+
+        // Überprüfung der Inputs auf korrekte Länge
         if (inputs.length != nodesIn) {
-            System.out.println("Input-Doubles-Array not same length as required Input-Doubles-Array length for this layer!");
+            throw new IllegalArgumentException("Input-Doubles-Array not same length as required " +
+                    "Input-Doubles-Array length for this layer!");
         }
 
         for (int out = 0; out < nodesOut; out++) {
 
+            // Bilden des Skalar-Produkts
             double weightedInput = MathUtils.sumMultipliedArrays(inputs, weightsIn[out]);
 
-
+            // Addieren von Bias-Wert
             weightedInput += biases[out];
-            weightedInputs[out] = weightedInput;
+
+            // Setzen des neuen Output-Werts jeder Node
             activations[out] = activationFunction.activation(weightedInput);
         }
 
