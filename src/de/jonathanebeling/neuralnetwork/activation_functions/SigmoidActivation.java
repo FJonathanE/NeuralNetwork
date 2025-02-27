@@ -1,4 +1,4 @@
-package de.jonathanebeling.neuralnetwork.activationFunctions;
+package de.jonathanebeling.neuralnetwork.activation_functions;
 
 public class SigmoidActivation implements ActivationFunction {
 

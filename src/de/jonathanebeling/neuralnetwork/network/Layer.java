@@ -1,7 +1,7 @@
 package de.jonathanebeling.neuralnetwork.network;
 
-import de.jonathanebeling.neuralnetwork.activationFunctions.ActivationFunction;
-import de.jonathanebeling.neuralnetwork.costFunctions.CostFunction;
+import de.jonathanebeling.neuralnetwork.activation_functions.ActivationFunction;
+import de.jonathanebeling.neuralnetwork.cost_functions.CostFunction;
 import de.jonathanebeling.neuralnetwork.utils.MathUtils;
 
 import java.io.Serial;

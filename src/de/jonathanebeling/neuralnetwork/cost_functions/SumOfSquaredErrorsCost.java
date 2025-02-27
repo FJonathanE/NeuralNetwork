@@ -1,4 +1,4 @@
-package de.jonathanebeling.neuralnetwork.costFunctions;
+package de.jonathanebeling.neuralnetwork.cost_functions;
 
 public class SumOfSquaredErrorsCost implements CostFunction {
 

@@ -1,7 +1,7 @@
 package de.jonathanebeling.neuralnetwork.network;
 
-import de.jonathanebeling.neuralnetwork.activationFunctions.ActivationFunction;
-import de.jonathanebeling.neuralnetwork.costFunctions.CostFunction;
+import de.jonathanebeling.neuralnetwork.activation_functions.ActivationFunction;
+import de.jonathanebeling.neuralnetwork.cost_functions.CostFunction;
 import de.jonathanebeling.neuralnetwork.data.DataPoint;
 import de.jonathanebeling.neuralnetwork.data.TrainingDataManager;
 import de.jonathanebeling.neuralnetwork.utils.DisplayHelper;
@@ -13,7 +13,6 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.logging.Logger;
 
 public class NeuralNetwork implements Serializable {
     @Serial

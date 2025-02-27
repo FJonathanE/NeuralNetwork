@@ -25,7 +25,6 @@ public class DigitDrawingAppSwing extends JFrame {
         setSize(560, 560);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Initialisiere das Canvas
         canvasImage = new BufferedImage(560, 560, BufferedImage.TYPE_INT_ARGB);
         g2d = canvasImage.createGraphics();
         g2d.setColor(Color.BLACK);
@@ -54,9 +53,6 @@ public class DigitDrawingAppSwing extends JFrame {
 
         setVisible(true);
 
-//        try (ExecutorService executor = Executors.newFixedThreadPool(1)) {
-//            executor.submit(() -> startClassifyDrawing());
-//        }
     }
 
 
@@ -98,7 +94,6 @@ public class DigitDrawingAppSwing extends JFrame {
 
     private void classifyDrawing() {
         try {
-            // Skaliere das Bild auf 28x28 und normalisiere es
 //            BufferedImage blurredImage = applyGaussianBlur(canvasImage);
 //            ImageIO.write(canvasImage, "png", new File("blurred_digit.png"));
             BufferedImage resizedImage = resizeImage(canvasImage, 28, 28);
@@ -110,11 +105,9 @@ public class DigitDrawingAppSwing extends JFrame {
             DataPoint dataPoint = new DataPoint(inputData, new double[10]);
 
 
-//            displayHelper.printDigit(dataPoint);
             System.out.println("##############");
             displayHelper.printTop3Outputs(network.calculateOutputs(inputData));
 
-            // Optional: Speichere das Bild für Debugging
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -153,7 +146,6 @@ public class DigitDrawingAppSwing extends JFrame {
         BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_BYTE_GRAY);
         java.awt.Graphics2D g2d = resizedImage.createGraphics();
 
-        // Verwende bilineare Interpolation
         g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
                 java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -183,9 +175,8 @@ public class DigitDrawingAppSwing extends JFrame {
 
 
     private NeuralNetwork loadTrainedNetwork() {
-        // Lade dein trainiertes neuronales Netzwerk
         try {
-            return NeuralNetwork.load("networks/temporary/test-6/epoch-6.ser");
+            return NeuralNetwork.load("networks/temporary/test-2/epoch-1.ser");
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {

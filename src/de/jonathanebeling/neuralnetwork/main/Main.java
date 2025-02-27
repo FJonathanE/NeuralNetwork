@@ -2,9 +2,8 @@ package de.jonathanebeling.neuralnetwork.main;
 
 import de.jonathanebeling.neuralnetwork.network.NeuralNetwork;
 import de.jonathanebeling.neuralnetwork.data.TrainingDataManager;
-import de.jonathanebeling.neuralnetwork.activationFunctions.ReLuActivation;
-import de.jonathanebeling.neuralnetwork.costFunctions.SumOfSquaredErrorsCost;
-import de.jonathanebeling.neuralnetwork.utils.DisplayHelper;
+import de.jonathanebeling.neuralnetwork.activation_functions.ReLuActivation;
+import de.jonathanebeling.neuralnetwork.cost_functions.SumOfSquaredErrorsCost;
 
 public class Main {
 
@@ -15,44 +14,60 @@ public class Main {
     private static final String TEST_LABEL_PATH = "src/data/t10k-labels.idx1-ubyte";
 
 
-    public static void main(String[] args) {
-        DisplayHelper printer = new DisplayHelper();
+    private static void trainingExample(){
 
-
-        // Trainingsdaten einrichten
-
+        // TrainingDataManager mit Trainingsdaten einrichten
         TrainingDataManager dataManager = TrainingDataManager.fromMnistData(0.05,
                 TRAINING_DATA_PATH, TRAINING_LABEL_PATH, TEST_DATA_PATH, TEST_LABEL_PATH);
-
-
         dataManager.setShuffleTrainingsData(true);
-        dataManager.setTrainingDataNoiseFactor(0.1);
 
-//        dataManager.setMaxRandomTrainingDataRotationAngle(10);
-//        dataManager.setMaxRandomTrainingDataTranslation(2);
-
-
-
+        int[] numLayers = {784, 200, 200, 10};
 
         // Neuronales Netz einrichten
-
-        int[] numLayers = {784, 100, 100, 10};
-
         NeuralNetwork network = new NeuralNetwork(numLayers, new ReLuActivation(), new SumOfSquaredErrorsCost(),
                 "networks/temporary/test");
 
-
-
         // Neuronales Netz trainieren
-
-        network.trainMiniBatchAsync(dataManager, 0.01, 50, 20);
-
+        network.trainMiniBatchAsync(dataManager, 0.01, 5, 5);
 
 
         // Neuronales Netz an Testdaten testen
-
         network.test(dataManager.getTestData());
 
 
+    }
+
+    private static void trainingExampleAugmentedData(){
+
+        // TrainingDataManager mit Trainingsdaten einrichten
+        TrainingDataManager dataManager = TrainingDataManager.fromMnistData(0.05,
+                TRAINING_DATA_PATH, TRAINING_LABEL_PATH, TEST_DATA_PATH, TEST_LABEL_PATH);
+
+        dataManager.setShuffleTrainingsData(true);
+        dataManager.setTrainingDataNoiseFactor(0.2);
+        dataManager.setMaxRandomTrainingDataRotationAngle(20);
+        dataManager.setMaxRandomTrainingDataTranslation(3);
+
+
+        int[] numLayers = {784, 200, 200, 10};
+
+        // Neuronales Netz einrichten
+        NeuralNetwork network = new NeuralNetwork(numLayers, new ReLuActivation(), new SumOfSquaredErrorsCost(),
+                "networks/temporary/test");
+
+        // Neuronales Netz trainieren
+        network.trainMiniBatchAsync(dataManager, 0.01, 5, 5);
+
+
+        // Neuronales Netz an Testdaten testen
+        network.test(dataManager.getTestData());
+
+
+    }
+
+
+
+    public static void main(String[] args) {
+        trainingExampleAugmentedData();
     }
 }
