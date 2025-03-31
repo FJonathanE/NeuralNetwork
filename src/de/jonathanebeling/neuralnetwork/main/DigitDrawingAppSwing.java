@@ -176,7 +176,7 @@ public class DigitDrawingAppSwing extends JFrame {
 
     private NeuralNetwork loadTrainedNetwork() {
         try {
-            return NeuralNetwork.load("networks/temporary/test-2/epoch-1.ser");
+            return NeuralNetwork.load("networks/saved/one.ser");
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
